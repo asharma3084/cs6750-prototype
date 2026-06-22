@@ -126,7 +126,7 @@
     display: inline-block; font-size: 11px; font-weight: 600;
     padding: 2px 8px; border-radius: 4px;
   }
-  .card .seller.walmart { color: var(--green); background: #e8f5ee; }
+  .card .seller.omnimart { color: var(--green); background: #e8f5ee; }
   .card .seller.marketplace { color: var(--accent); background: var(--accent-bg); }
   .card .sponsored {
     position: absolute; top: 8px; right: 8px;
@@ -319,7 +319,7 @@
         <div class="price" id="pdp-price"></div>
         <button class="add-btn">Add to cart</button>
         <p style="font-size:13px;color:#666;line-height:1.5;margin-top:18px;">
-          Free pickup tomorrow at your store. Sold and shipped by Walmart.
+          Free pickup tomorrow at your store. Sold and shipped by Omni-Mart.
           30-day returns.
         </p>
       </div>
@@ -410,35 +410,35 @@
   // Designed so {under40, 4plus, stainless, cordless} together = 0 items,
   // but dropping "cordless" recovers 3 items.
   const ITEMS = [
-    { id: 1,  title: "Hamilton Beach 1.7L Stainless",     price: 28.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 1,  title: "Hamilton Beach 1.7L Stainless",     price: 28.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 2,  title: "Cuisinart 1.5L Brushed Steel",      price: 36.49, rating: 4.6, material: "stainless", cord: "corded",   seller: "Marketplace", sponsored: false },
-    { id: 3,  title: "Mueller 1.8L Stainless",            price: 22.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
-    { id: 4,  title: "OXO Brew 1.0L",                     price: 59.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 5,  title: "Chefman Cordless Stainless 1.0L",   price: 49.99, rating: 4.3, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 6,  title: "BELLA 1.0L Glass Kettle",           price: 18.99, rating: 4.2, material: "glass",     cord: "cordless", seller: "Walmart",     sponsored: true  },
+    { id: 3,  title: "Mueller 1.8L Stainless",            price: 22.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: false },
+    { id: 4,  title: "OXO Brew 1.0L",                     price: 59.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 5,  title: "Chefman Cordless Stainless 1.0L",   price: 49.99, rating: 4.3, material: "stainless", cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 6,  title: "BELLA 1.0L Glass Kettle",           price: 18.99, rating: 4.2, material: "glass",     cord: "cordless", seller: "Omni-Mart",     sponsored: true  },
     { id: 7,  title: "Cosori Glass Cordless 1.7L",        price: 32.99, rating: 4.5, material: "glass",     cord: "cordless", seller: "Marketplace", sponsored: false },
-    { id: 8,  title: "Hamilton Beach Cordless 1.0L",      price: 34.99, rating: 4.4, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 8,  title: "Hamilton Beach Cordless 1.0L",      price: 34.99, rating: 4.4, material: "plastic",   cord: "cordless", seller: "Omni-Mart",     sponsored: false },
     { id: 9,  title: "Mueller Cordless Premium 1.5L",     price: 38.49, rating: 4.5, material: "plastic",   cord: "cordless", seller: "Marketplace", sponsored: false },
-    { id: 10, title: "Proctor Silex 1.0L",                price: 12.99, rating: 3.9, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 10, title: "Proctor Silex 1.0L",                price: 12.99, rating: 3.9, material: "plastic",   cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 11, title: "GENERIC Kettle 1.0L",               price:  9.49, rating: 3.4, material: "plastic",   cord: "corded",   seller: "Marketplace", sponsored: true  },
-    { id: 12, title: "Smeg 1.0L Cream",                   price: 199.00,rating: 4.8, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 13, title: "Breville Soft Top 1.7L Stainless",  price: 79.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 12, title: "Smeg 1.0L Cream",                   price: 199.00,rating: 4.8, material: "stainless", cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 13, title: "Breville Soft Top 1.7L Stainless",  price: 79.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Omni-Mart",     sponsored: false },
     { id: 14, title: "Aigostar Glass 1.7L",               price: 24.99, rating: 4.1, material: "glass",     cord: "corded",   seller: "Marketplace", sponsored: false },
-    { id: 15, title: "Ovente Glass 1.7L",                 price: 19.99, rating: 4.3, material: "glass",     cord: "corded",   seller: "Walmart",     sponsored: false },
-    { id: 16, title: "Russell Hobbs Compact 1.7L",        price: 44.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 15, title: "Ovente Glass 1.7L",                 price: 19.99, rating: 4.3, material: "glass",     cord: "corded",   seller: "Omni-Mart",     sponsored: false },
+    { id: 16, title: "Russell Hobbs Compact 1.7L",        price: 44.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 17, title: "Krups Cool Touch 1.7L",             price: 52.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Marketplace", sponsored: false },
-    { id: 18, title: "Secura Stainless 1.8L",             price: 39.99, rating: 4.2, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: true  },
-    { id: 19, title: "T-fal Smart Kettle 1.7L",           price: 29.99, rating: 4.0, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 18, title: "Secura Stainless 1.8L",             price: 39.99, rating: 4.2, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: true  },
+    { id: 19, title: "T-fal Smart Kettle 1.7L",           price: 29.99, rating: 4.0, material: "plastic",   cord: "cordless", seller: "Omni-Mart",     sponsored: false },
     { id: 20, title: "Pukomc Glass Cordless 1.7L",        price: 26.99, rating: 4.4, material: "glass",     cord: "cordless", seller: "Marketplace", sponsored: false },
-    { id: 21, title: "Comfee 1.7L Stainless",             price: 24.99, rating: 4.0, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
-    { id: 22, title: "Zwilling Enfinigy 1.5L",            price: 109.99,rating: 4.7, material: "glass",     cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 23, title: "Aroma Hot H2O 1.0L",                price: 14.99, rating: 3.8, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 21, title: "Comfee 1.7L Stainless",             price: 24.99, rating: 4.0, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: false },
+    { id: 22, title: "Zwilling Enfinigy 1.5L",            price: 109.99,rating: 4.7, material: "glass",     cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 23, title: "Aroma Hot H2O 1.0L",                price: 14.99, rating: 3.8, material: "plastic",   cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 24, title: "Brentwood Tea Kettle 1.0L",         price: 11.49, rating: 3.6, material: "plastic",   cord: "corded",   seller: "Marketplace", sponsored: true  },
-    { id: 25, title: "Black+Decker JKC650 1.7L",          price: 42.99, rating: 4.1, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 26, title: "Cuisinart PerfecTemp 1.7L",         price: 99.99, rating: 4.6, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
-    { id: 27, title: "KitchenAid 1.25L Onyx",             price: 89.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 25, title: "Black+Decker JKC650 1.7L",          price: 42.99, rating: 4.1, material: "plastic",   cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 26, title: "Cuisinart PerfecTemp 1.7L",         price: 99.99, rating: 4.6, material: "stainless", cord: "cordless", seller: "Omni-Mart",     sponsored: false },
+    { id: 27, title: "KitchenAid 1.25L Onyx",             price: 89.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 28, title: "Mecity Mini Travel Kettle",         price: 34.99, rating: 4.2, material: "plastic",   cord: "cordless", seller: "Marketplace", sponsored: false },
-    { id: 29, title: "Hamilton Beach 1.0L Mini",          price: 16.99, rating: 4.0, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 29, title: "Hamilton Beach 1.0L Mini",          price: 16.99, rating: 4.0, material: "plastic",   cord: "corded",   seller: "Omni-Mart",     sponsored: false },
     { id: 30, title: "Cosmo Stainless Cordless 1.7L",     price: 69.99, rating: 4.2, material: "stainless", cord: "cordless", seller: "Marketplace", sponsored: false },
     { id: 31, title: "Aroma Glass 1.7L",                  price: 22.99, rating: 3.7, material: "glass",     cord: "corded",   seller: "Marketplace", sponsored: true  },
     { id: 32, title: "Sahara Stainless 1.7L Lux",         price: 149.00,rating: 4.6, material: "stainless", cord: "cordless", seller: "Marketplace", sponsored: false },
@@ -584,7 +584,7 @@
           <div class="title">${it.title}</div>
           <div class="rating">${"&#9733;".repeat(Math.round(it.rating))}&nbsp; ${it.rating.toFixed(1)}</div>
           <div class="price">$${it.price.toFixed(2)}</div>
-          <span class="seller ${it.seller==="Walmart"?"walmart":"marketplace"}">${it.seller==="Walmart"?"Sold by Walmart":"Marketplace seller"}</span>
+          <span class="seller ${it.seller==="Omni-Mart"?"omnimart":"marketplace"}">${it.seller==="Omni-Mart"?"Sold by Omni-Mart":"Marketplace seller"}</span>
         </div>
         ${it.sponsored?'<span class="sponsored">Sponsored</span>':""}
       `;
