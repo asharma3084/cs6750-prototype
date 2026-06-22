@@ -44,9 +44,13 @@
     display: flex; gap: 10px; align-items: center; flex: 0 0 auto;
   }
   .logo {
-    width: 32px; height: 32px; background: var(--wm-yellow);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-weight: 700; color: var(--wm-blue); font-size: 20px;
+    width: 36px; height: 36px; background: var(--wm-yellow);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+  }
+  .brand-text {
+    color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -0.2px;
+    margin-right: 4px; white-space: nowrap;
   }
   .search-bar {
     flex: 1; background: #fff; border-radius: 24px;
@@ -283,9 +287,18 @@
       <span>100%</span>
     </div>
     <div class="header" id="header">
-      <div class="logo">*</div>
+      <div class="logo" aria-label="Omni-Mart logo">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <circle cx="9" cy="12" r="6" fill="none" stroke="#0071dc" stroke-width="2.4"/>
+          <circle cx="15" cy="12" r="6" fill="#0071dc"/>
+        </svg>
+      </div>
+      <span class="brand-text">Omni&middot;Mart</span>
       <div class="search-bar">
-        <span class="ico">&#128269;</span>
+        <svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#7a7a82" stroke-width="2"/>
+          <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="#7a7a82" stroke-width="2" stroke-linecap="round"/>
+        </svg>
         <span id="search-text">electric kettle</span>
       </div>
     </div>
