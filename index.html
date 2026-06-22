@@ -22,116 +22,272 @@
     --shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); overflow-x: hidden; }
   body {
     min-height: 100vh;
+    position: relative;
     background:
-      radial-gradient(1100px 560px at 14% 18%, #e7eef9 0%, transparent 60%),
-      radial-gradient(900px 500px at 88% 80%, #f1e9f7 0%, transparent 55%),
-      linear-gradient(180deg, #f5f6fb 0%, #e9ebf2 100%);
+      radial-gradient(1100px 560px at 12% 14%, #dde6f7 0%, transparent 60%),
+      radial-gradient(900px 500px at 90% 86%, #f0e1f6 0%, transparent 55%),
+      radial-gradient(700px 400px at 62% 28%, #fff2d8 0%, transparent 50%),
+      linear-gradient(180deg, #f6f7fc 0%, #eaecf2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px 32px;
   }
+  body::before, body::after {
+    content: ''; position: fixed; border-radius: 50%;
+    filter: blur(60px); z-index: 0; pointer-events: none;
+    animation: float 18s ease-in-out infinite;
+  }
+  body::before {
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(0, 113, 220, 0.20), transparent 70%);
+    top: -90px; left: -70px;
+  }
+  body::after {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(216, 131, 36, 0.18), transparent 70%);
+    bottom: -110px; right: -90px;
+    animation-delay: -9s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -22px) scale(1.08); }
+  }
   .page {
     width: 100%;
-    max-width: 1180px;
+    max-width: 1200px;
     display: grid;
     grid-template-columns: 360px 1fr;
-    gap: 64px;
+    gap: 60px;
     align-items: center;
+    position: relative;
+    z-index: 1;
   }
-  .device-col { display: flex; justify-content: center; }
+  .device-col {
+    display: flex; justify-content: center;
+    animation: deviceIn 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes deviceIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
   .device-wrap {
-    width: 324px;
-    height: 680px;
+    width: 324px; height: 680px;
     position: relative;
     flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
+  .device-wrap:hover { transform: translateY(-4px); }
   .device-wrap .device {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 10px; left: 10px;
     transform: scale(0.78);
     transform-origin: top left;
+    transition: box-shadow 0.4s;
+  }
+  .device-wrap:hover .device {
+    box-shadow: 0 30px 60px rgba(0,0,0,0.20), 0 0 0 12px #111;
   }
   .content-col { max-width: 600px; }
+  .eyebrow, .hero-title, .lede, .stats, .block, .heuristics, .meta {
+    opacity: 0; transform: translateY(14px);
+    animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  .eyebrow { animation-delay: 0.05s; }
+  .hero-title { animation-delay: 0.13s; }
+  .lede { animation-delay: 0.22s; }
+  .stats { animation-delay: 0.30s; }
+  .block:nth-of-type(1) { animation-delay: 0.38s; }
+  .block:nth-of-type(2) { animation-delay: 0.46s; }
+  .heuristics { animation-delay: 0.54s; }
+  .meta { animation-delay: 0.62s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
   .eyebrow {
-    font-size: 11.5px; font-weight: 700; letter-spacing: 1.6px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(30, 84, 201, 0.10);
+    border: 1px solid rgba(30, 84, 201, 0.18);
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
     text-transform: uppercase; color: var(--accent);
     margin-bottom: 16px;
   }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(1.35); }
+  }
   .hero-title {
-    font-size: clamp(30px, 3.4vw, 44px); font-weight: 800;
-    line-height: 1.08; letter-spacing: -1.2px;
-    margin: 0 0 18px; color: #14141a;
+    font-size: clamp(28px, 3.2vw, 42px); font-weight: 800;
+    line-height: 1.06; letter-spacing: -1.3px;
+    margin: 0 0 14px;
+    background: linear-gradient(135deg, #14141a 0%, #2a3a8a 55%, #1e54c9 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .hero-title em {
-    font-style: normal; color: #a8431a;
-    background: linear-gradient(180deg, transparent 64%, rgba(216, 131, 36, 0.32) 64%);
-    padding: 0 4px;
+    font-style: normal; position: relative;
+    background: linear-gradient(135deg, #d88324 0%, #a8431a 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    white-space: nowrap;
+  }
+  .hero-title em::after {
+    content: ''; position: absolute;
+    left: -3px; right: -3px; bottom: 3px; height: 9px;
+    background: linear-gradient(90deg, rgba(255, 194, 32, 0.55), rgba(216, 131, 36, 0.32));
+    border-radius: 4px; z-index: -1;
   }
   .lede {
-    font-size: 16.5px; line-height: 1.55; color: #3d3d46;
-    margin: 0 0 26px; max-width: 560px;
+    font-size: 15.5px; line-height: 1.55; color: #3d3d46;
+    margin: 0 0 18px; max-width: 560px;
   }
-  .block { margin-bottom: 22px; }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-bottom: 20px;
+  }
+  .stat {
+    padding: 10px 11px 8px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 11px;
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  }
+  .stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.10);
+  }
+  .stat-num {
+    font-size: 21px; font-weight: 800; letter-spacing: -0.5px;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: 1px; line-height: 1;
+  }
+  .stat:nth-child(1) .stat-num { background: linear-gradient(135deg, #1e54c9, #6a3ad3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat:nth-child(2) .stat-num { background: linear-gradient(135deg, #d88324, #b25410); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat:nth-child(3) .stat-num { background: linear-gradient(135deg, #1f7a3c, #155f2c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat:nth-child(4) .stat-num { background: linear-gradient(135deg, #a8431a, #6e2d11); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+    color: #6a6a74; text-transform: uppercase; line-height: 1.3;
+  }
+  .block { margin-bottom: 16px; }
   .block-h {
-    font-size: 11px; font-weight: 700; letter-spacing: 1.3px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 1.3px;
     text-transform: uppercase; color: #6a6a74;
-    margin: 0 0 12px;
+    margin: 0 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .block-h::before {
+    content: ''; width: 18px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 2px;
   }
   .steps { margin: 0; padding: 0; list-style: none; }
   .steps li {
-    display: flex; gap: 14px; align-items: flex-start;
-    font-size: 14.5px; line-height: 1.55; color: #2a2a30;
-    margin-bottom: 9px;
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 14px; line-height: 1.55; color: #2a2a30;
+    margin-bottom: 7px;
   }
   .steps .step-n {
     flex-shrink: 0; width: 24px; height: 24px;
-    border-radius: 50%; background: #14141a; color: #fff;
-    font-size: 12px; font-weight: 700;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e54c9, #6a3ad3);
+    color: #fff; font-size: 12px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
-    margin-top: 1px;
+    box-shadow: 0 3px 8px rgba(30, 84, 201, 0.30);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .steps li:hover .step-n {
+    transform: scale(1.08);
+    box-shadow: 0 5px 12px rgba(30, 84, 201, 0.40);
   }
   .steps kbd, .bullet kbd {
     display: inline-block; padding: 1px 7px; border-radius: 5px;
     background: #fff; border: 1px solid var(--line);
     font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 12px; color: #222;
+    font-size: 11.5px; color: #222;
     box-shadow: 0 1px 0 rgba(0,0,0,0.05);
   }
-  .bullets { display: flex; flex-direction: column; gap: 10px; }
+  .bullets { display: flex; flex-direction: column; gap: 7px; }
   .bullet {
-    display: flex; gap: 12px; align-items: flex-start;
-    font-size: 14.5px; line-height: 1.5; color: #2a2a30;
+    display: flex; gap: 11px; align-items: flex-start;
+    font-size: 14px; line-height: 1.5; color: #2a2a30;
+    padding: 9px 11px; border-radius: 10px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .bullet:hover {
+    transform: translateX(2px);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(0, 0, 0, 0.10);
   }
   .bullet-mark {
     flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px;
-    border-radius: 50%; background: #fff;
-    border: 1.5px solid var(--accent); color: var(--accent);
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e6efff, #c8d8f7);
+    color: var(--accent);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; line-height: 1;
+    font-size: 12px; font-weight: 800; line-height: 1;
+    box-shadow: inset 0 0 0 1px rgba(30, 84, 201, 0.22);
   }
-  .bullet-mark.warn { border-color: var(--drop); color: var(--drop); }
+  .bullet-mark.warn {
+    background: linear-gradient(135deg, #fff3e8, #ffd6b3);
+    color: var(--drop);
+    box-shadow: inset 0 0 0 1px rgba(168, 67, 26, 0.24);
+  }
+  .bullet-mark.cycle {
+    background: linear-gradient(135deg, #e4f6e9, #c2e5cd);
+    color: var(--green);
+    box-shadow: inset 0 0 0 1px rgba(31, 122, 60, 0.24);
+  }
   .bullet b { color: #14141a; }
-  .meta {
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    margin-top: 22px; padding-top: 16px; border-top: 1px solid #d8d8e0;
-    font-size: 12.5px; color: #6a6a74;
+  .heuristics {
+    display: flex; gap: 7px; flex-wrap: wrap;
+    margin-bottom: 14px;
   }
-  .meta a { color: var(--accent); font-weight: 600; text-decoration: none; }
-  .meta a:hover { text-decoration: underline; }
+  .h-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid #d8d8e0;
+    color: #4a4a54;
+  }
+  .h-chip svg { color: var(--accent); flex-shrink: 0; }
+  .meta {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding-top: 14px; border-top: 1px solid #d8d8e0;
+    font-size: 12px; color: #6a6a74;
+  }
+  .meta a {
+    color: var(--accent); font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 6px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .meta a:hover { background: rgba(30, 84, 201, 0.10); transform: translateY(-1px); }
   .meta-dot { color: #b8b8c0; }
 
   @media (max-width: 980px) {
     body { padding: 24px 16px 48px; align-items: flex-start; }
+    body::before, body::after { display: none; }
     .page { grid-template-columns: 1fr; gap: 32px; justify-items: center; }
     .device-wrap .device { transform: scale(1); position: static; }
     .device-wrap { width: 414px; height: auto; }
     .content-col { max-width: 100%; }
     .hero-title { font-size: 28px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .eyebrow, .hero-title, .lede, .stats, .block, .heuristics, .meta { opacity: 1; transform: none; }
   }
   .device {
     width: 390px; height: 844px;
@@ -540,9 +696,16 @@
     </div></section>
 
     <section class="content-col">
-      <div class="eyebrow">CS&nbsp;6750 &middot; Individual Project &middot; Check&#8209;In&nbsp;4</div>
+      <div class="eyebrow"><span class="dot"></span>CS&nbsp;6750 &middot; Individual Project &middot; Check&#8209;In&nbsp;4</div>
       <h1 class="hero-title">Persistent filters,<br>with <em>honest drop</em> behavior.</h1>
-      <p class="lede">A medium-fidelity prototype that fixes the most-cited bug in Omni&middot;Mart's mobile filter experience: your selections silently vanish when you back out of a product page. This redesign pins them, and when four filters together return zero, the system tells you which one it had to relax and why.</p>
+      <p class="lede">A medium&#8209;fidelity prototype that fixes the most&#8209;cited bug in Omni&middot;Mart's mobile filter experience: your selections silently vanish when you back out of a product page. This redesign pins them, and when four filters together return zero, the system tells you which one it had to relax and why.</p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-num">32</div><div class="stat-label">Mock products</div></div>
+        <div class="stat"><div class="stat-num">4</div><div class="stat-label">Filter groups</div></div>
+        <div class="stat"><div class="stat-num">7</div><div class="stat-label">Screens covered</div></div>
+        <div class="stat"><div class="stat-num">0&rarr;3</div><div class="stat-label">Conflict recovery</div></div>
+      </div>
 
       <div class="block">
         <h3 class="block-h">Try it in 30 seconds</h3>
@@ -556,16 +719,27 @@
       <div class="block">
         <h3 class="block-h">What this is fixing</h3>
         <div class="bullets">
-          <div class="bullet"><div class="bullet-mark">&#10003;</div><div><b>Sticky strip.</b> Today's app drops filters on back-nav from a product page. The prototype pins them in the same order.</div></div>
-          <div class="bullet"><div class="bullet-mark warn">!</div><div><b>Honest drop on conflict.</b> Instead of an empty &ldquo;0 results&rdquo; page, the lowest-priority filter relaxes and the orange card explains the swap.</div></div>
-          <div class="bullet"><div class="bullet-mark">&#8635;</div><div><b>Recovery is one tap.</b> Tap the greyed chip to swap which filter gets relaxed, or <kbd>Clear all</kbd> to start over.</div></div>
+          <div class="bullet"><div class="bullet-mark">&#10003;</div><div><b>Sticky strip.</b> Today's app drops filters on back&#8209;nav from a product page. The prototype pins them in the same order, scroll position preserved.</div></div>
+          <div class="bullet"><div class="bullet-mark warn">!</div><div><b>Honest drop on conflict.</b> Instead of an empty &ldquo;0 results&rdquo; page, the least selective filter relaxes, the chip stays visible in dashed grey, and an orange card names the swap.</div></div>
+          <div class="bullet"><div class="bullet-mark cycle">&#8635;</div><div><b>Recovery is one tap.</b> Tap the greyed chip to swap which filter gets relaxed (counts of items each alternative would bring back), or <kbd>Clear all</kbd> to start over.</div></div>
         </div>
       </div>
 
+      <div class="heuristics">
+        <span class="h-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 L10 18 L20 6"/></svg>Recognition over recall &middot; Norman</span>
+        <span class="h-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 L10 18 L20 6"/></svg>User control &amp; freedom &middot; Nielsen</span>
+        <span class="h-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 L10 18 L20 6"/></svg>Visibility of system status</span>
+      </div>
+
       <div class="meta">
-        <a href="https://github.com/asharma3084/cs6750-prototype" target="_blank" rel="noopener">View source on GitHub</a>
+        <a href="https://github.com/asharma3084/cs6750-prototype" target="_blank" rel="noopener" aria-label="View source on GitHub">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.32-1.27-1.68-1.27-1.68-1.04-.7.08-.69.08-.69 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.24 2.75.12 3.04.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/></svg>
+          Source on GitHub
+        </a>
         <span class="meta-dot">&middot;</span>
-        <span>Brand anonymized as Omni&middot;Mart for academic use</span>
+        <span>Eval plan: SUS + per-task ease, target N&nbsp;=&nbsp;20</span>
+        <span class="meta-dot">&middot;</span>
+        <span>Brand anonymized as Omni&middot;Mart</span>
       </div>
     </section>
   </main>
