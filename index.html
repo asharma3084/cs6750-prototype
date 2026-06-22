@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kettle filter prototype - CIN4</title>
+<style>
+  :root {
+    --wm-blue: #0071dc;
+    --wm-blue-dark: #004f9a;
+    --wm-yellow: #ffc220;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d8d8dc;
+    --soft: #f3f3f5;
+    --accent: #1e54c9;
+    --accent-bg: #e6efff;
+    --drop: #a8431a;
+    --drop-bg: #fff3e8;
+    --green: #1f7a3c;
+    --orange: #d88324;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: #e8e8ec; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 12px 80px; }
+  .stage-label { max-width: 390px; font-size: 13px; color: #555; margin: 0 0 12px; line-height: 1.5; }
+  .stage-label b { color: #222; }
+  .device {
+    width: 390px; height: 844px;
+    background: #fff; border-radius: 36px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12), 0 0 0 12px #111;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .statusbar {
+    height: 38px; background: var(--soft); display: flex;
+    justify-content: space-between; align-items: center;
+    padding: 0 22px; font-size: 13px; font-weight: 600;
+    color: #222; flex: 0 0 auto;
+  }
+  .header {
+    background: var(--wm-blue); padding: 10px 16px;
+    display: flex; gap: 10px; align-items: center; flex: 0 0 auto;
+  }
+  .logo {
+    width: 32px; height: 32px; background: var(--wm-yellow);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--wm-blue); font-size: 20px;
+  }
+  .search-bar {
+    flex: 1; background: #fff; border-radius: 24px;
+    padding: 8px 14px; font-size: 14px; color: #444;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-bar .ico { color: #888; }
+  .body {
+    flex: 1; overflow-y: auto; background: #fff;
+    position: relative;
+  }
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px 8px; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: #fff; z-index: 5;
+  }
+  .toolbar .count { font-size: 15px; font-weight: 600; }
+  .toolbar .actions { display: flex; gap: 16px; font-size: 14px; color: var(--accent); font-weight: 600; }
+  .toolbar .actions button {
+    background: none; border: none; color: var(--accent);
+    font-weight: 600; font-size: 14px; cursor: pointer; padding: 4px 0;
+  }
+  .strip {
+    position: sticky; top: 45px; z-index: 4;
+    background: #fafbff; border-bottom: 1px solid var(--line);
+    padding: 10px 12px; display: flex; gap: 8px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip .label { font-size: 13px; color: var(--muted); font-weight: 600; padding: 6px 4px; white-space: nowrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 16px;
+    font-size: 13px; font-weight: 600; white-space: nowrap;
+    background: var(--accent-bg); color: var(--accent);
+    border: 1.5px solid var(--accent); cursor: pointer;
+    flex-shrink: 0;
+  }
+  .chip.dropped {
+    background: var(--soft); color: var(--drop);
+    border-style: dashed; border-color: #bbb;
+  }
+  .chip.dropped .x { display: none; }
+  .chip .x { margin-left: 4px; opacity: 1; font-size: 16px; font-weight: 700; line-height: 1; }
+  .clear-all {
+    margin-left: auto; padding: 6px 12px; border-radius: 16px;
+    font-size: 13px; font-weight: 700;
+    background: #fff; color: var(--drop);
+    border: 1.5px solid var(--drop); cursor: pointer;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .clear-all:hover { background: var(--drop-bg); }
+  .results { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .empty {
+    padding: 40px 24px; text-align: center; color: var(--muted);
+    font-size: 14px; line-height: 1.5;
+  }
+  .card {
+    display: flex; gap: 12px; padding: 12px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: #fff; cursor: pointer; box-shadow: var(--shadow);
+    position: relative;
+  }
+  .card:hover { border-color: #999; }
+  .card .img {
+    width: 92px; height: 92px; flex-shrink: 0;
+    background: linear-gradient(135deg, #f0f0f4 0%, #e0e0e4 100%);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    color: #aaa; font-size: 11px;
+  }
+  .card .info { flex: 1; min-width: 0; }
+  .card .title { font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+  .card .rating { font-size: 12px; color: var(--orange); margin-bottom: 4px; }
+  .card .price { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .card .seller {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .card .seller.walmart { color: var(--green); background: #e8f5ee; }
+  .card .seller.marketplace { color: var(--accent); background: var(--accent-bg); }
+  .card .sponsored {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 10px; font-weight: 600; color: var(--orange);
+    background: #fff8e8; padding: 2px 6px; border-radius: 4px;
+    border: 1px solid #f5d99a;
+  }
+  .drop-card {
+    margin: 12px; padding: 12px 14px;
+    background: var(--drop-bg); border: 1px solid #e7b88a;
+    border-radius: 12px;
+  }
+  .drop-card .head {
+    font-size: 14px; font-weight: 700; color: var(--drop);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+  }
+  .drop-card .body-text { font-size: 13px; color: #5a3a22; line-height: 1.45; }
+  .drop-card .body-text b { color: var(--drop); }
+  .drop-card .cta {
+    margin-top: 10px; font-size: 13px; font-weight: 600;
+    color: var(--accent); cursor: pointer;
+  }
+  .nav {
+    height: 64px; flex: 0 0 auto;
+    background: #fff; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; align-items: center;
+    padding-bottom: 4px;
+  }
+  .nav .item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px; font-size: 10px; color: var(--muted); cursor: pointer;
+  }
+  .nav .item.active { color: var(--accent); }
+  .nav .icon { width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 4px; }
+
+  /* Modal */
+  .scrim {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+    display: none; z-index: 10;
+  }
+  .scrim.open { display: block; }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #fff; border-radius: 18px 18px 0 0;
+    padding: 16px 18px 24px; z-index: 11; display: none;
+    max-height: 75%; overflow-y: auto;
+  }
+  .sheet.open { display: block; }
+  .sheet-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .sheet-head .title { font-size: 17px; font-weight: 700; }
+  .sheet-head button {
+    background: none; border: none; color: var(--accent);
+    font-weight: 600; font-size: 14px; cursor: pointer; padding: 4px;
+  }
+  .group { margin-bottom: 18px; }
+  .group h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #333; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    padding: 8px 14px; border-radius: 8px; font-size: 13px;
+    border: 1.5px solid var(--line); background: #fff; cursor: pointer;
+    color: #333; font-weight: 500;
+  }
+  .opt.on {
+    border-color: var(--accent); background: var(--accent-bg);
+    color: var(--accent); font-weight: 700;
+  }
+  .apply-btn {
+    width: 100%; padding: 14px; margin-top: 8px;
+    background: var(--wm-blue); color: #fff; border: none;
+    border-radius: 24px; font-weight: 700; font-size: 15px; cursor: pointer;
+  }
+
+  /* Recovery modal */
+  .modal {
+    position: absolute; left: 24px; right: 24px; top: 50%;
+    transform: translateY(-50%);
+    background: #fff; border-radius: 14px; padding: 18px;
+    z-index: 12; display: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal.open { display: block; }
+  .modal h3 { margin: 0 0 6px; font-size: 17px; }
+  .modal p { margin: 0 0 14px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+  .modal .option {
+    padding: 12px; border: 1.5px solid var(--accent); border-radius: 10px;
+    margin-bottom: 8px; cursor: pointer; background: #fcfdff;
+  }
+  .modal .option:hover { background: var(--accent-bg); }
+  .modal .option .o-label { font-size: 14px; font-weight: 700; color: var(--accent); }
+  .modal .option .o-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .modal .cancel {
+    width: 100%; padding: 10px; margin-top: 6px;
+    background: none; border: none; color: var(--muted);
+    font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+
+  /* PDP */
+  .pdp-back {
+    padding: 12px 16px; font-size: 14px; font-weight: 600;
+    color: var(--accent); cursor: pointer;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: #fff; z-index: 5;
+  }
+  .pdp-img {
+    height: 280px; margin: 0; background: linear-gradient(135deg, #f0f0f4, #d8d8dc);
+    display: flex; align-items: center; justify-content: center;
+    color: #aaa; font-size: 13px;
+  }
+  .pdp-info { padding: 16px; }
+  .pdp-info h2 { margin: 0 0 6px; font-size: 18px; }
+  .pdp-info .price { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .pdp-info .rating { color: var(--orange); font-size: 14px; margin-bottom: 16px; }
+  .add-btn {
+    width: 100%; padding: 14px; background: var(--wm-blue);
+    color: #fff; border: none; border-radius: 24px;
+    font-weight: 700; font-size: 16px; cursor: pointer;
+  }
+
+  .flash {
+    position: absolute; top: 110px; left: 16px; right: 16px;
+    background: #1f7a3c; color: #fff;
+    padding: 10px 14px; border-radius: 10px; font-size: 13px;
+    z-index: 8; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; text-align: center; font-weight: 600;
+  }
+  .flash.show { opacity: 1; }
+
+  .hint {
+    margin-top: 16px; max-width: 390px;
+    font-size: 12px; color: #555; line-height: 1.5;
+    background: #fff; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--line);
+  }
+  .hint b { color: #222; }
+  .hint kbd {
+    display: inline-block; padding: 2px 6px; border-radius: 4px;
+    background: var(--soft); border: 1px solid var(--line);
+    font-family: ui-monospace, monospace; font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <p class="stage-label">
+    <b>CIN4 medium-fidelity prototype.</b>
+    Persistent filter strip with honest drop behavior on conflict.
+    Tap to explore: Filter -> apply 4 -> watch one drop -> tap into a result -> back -> filters held.
+  </p>
+
+  <div class="device" id="device">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span>100%</span>
+    </div>
+    <div class="header" id="header">
+      <div class="logo">*</div>
+      <div class="search-bar">
+        <span class="ico">&#128269;</span>
+        <span id="search-text">electric kettle</span>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div class="body" id="screen-results">
+      <div class="toolbar">
+        <span class="count" id="count">- results</span>
+        <span class="actions">
+          <button id="btn-sort">Sort</button>
+          <button id="btn-filter">Filter</button>
+        </span>
+      </div>
+      <div class="strip" id="strip" style="display:none;">
+        <span class="label">Filters:</span>
+      </div>
+      <div id="drop-banner-host"></div>
+      <div class="results" id="results"></div>
+    </div>
+
+    <!-- PDP SCREEN -->
+    <div class="body" id="screen-pdp" style="display:none;">
+      <div class="pdp-back" id="pdp-back">&larr; back to results</div>
+      <div class="strip" id="strip-pdp" style="display:none;">
+        <span class="label">Filters:</span>
+      </div>
+      <div class="pdp-img">[product photo]</div>
+      <div class="pdp-info">
+        <h2 id="pdp-title"></h2>
+        <div class="rating" id="pdp-rating"></div>
+        <div class="price" id="pdp-price"></div>
+        <button class="add-btn">Add to cart</button>
+        <p style="font-size:13px;color:#666;line-height:1.5;margin-top:18px;">
+          Free pickup tomorrow at your store. Sold and shipped by Walmart.
+          30-day returns.
+        </p>
+      </div>
+    </div>
+
+    <div class="nav">
+      <div class="item active"><div class="icon"></div>Home</div>
+      <div class="item"><div class="icon"></div>Categories</div>
+      <div class="item"><div class="icon"></div>Search</div>
+      <div class="item"><div class="icon"></div>Cart</div>
+      <div class="item"><div class="icon"></div>Account</div>
+    </div>
+
+    <!-- Filter sheet -->
+    <div class="scrim" id="scrim"></div>
+    <div class="sheet" id="sheet">
+      <div class="sheet-head">
+        <button id="sheet-cancel">Cancel</button>
+        <span class="title">Filter</span>
+        <button id="sheet-clear">Clear</button>
+      </div>
+      <div class="group">
+        <h4>Price</h4>
+        <div class="opts" data-group="price">
+          <span class="opt" data-val="under20">Under $20</span>
+          <span class="opt" data-val="under40">Under $40</span>
+          <span class="opt" data-val="under60">Under $60</span>
+          <span class="opt" data-val="any">Any</span>
+        </div>
+      </div>
+      <div class="group">
+        <h4>Rating</h4>
+        <div class="opts" data-group="rating">
+          <span class="opt" data-val="4plus">4+ stars</span>
+          <span class="opt" data-val="3plus">3+ stars</span>
+          <span class="opt" data-val="any">Any</span>
+        </div>
+      </div>
+      <div class="group">
+        <h4>Material</h4>
+        <div class="opts" data-group="material">
+          <span class="opt" data-val="stainless">Stainless</span>
+          <span class="opt" data-val="glass">Glass</span>
+          <span class="opt" data-val="plastic">Plastic</span>
+          <span class="opt" data-val="any">Any</span>
+        </div>
+      </div>
+      <div class="group">
+        <h4>Cord type</h4>
+        <div class="opts" data-group="cord">
+          <span class="opt" data-val="cordless">Cordless</span>
+          <span class="opt" data-val="corded">Corded</span>
+          <span class="opt" data-val="any">Any</span>
+        </div>
+      </div>
+      <button class="apply-btn" id="sheet-apply">Apply</button>
+    </div>
+
+    <!-- Recovery modal -->
+    <div class="modal" id="modal">
+      <h3 id="modal-title">Re-apply Cordless?</h3>
+      <p id="modal-sub">
+        Cordless can't combine with the other filters right now.
+        Pick a filter to drop instead:
+      </p>
+      <div id="modal-opts"></div>
+      <button class="cancel" id="modal-cancel">Keep current filters</button>
+    </div>
+
+    <div class="flash" id="flash"></div>
+  </div>
+
+  <div class="hint">
+    <b>How to use:</b> Tap <kbd>Filter</kbd>, pick one option from each of the four
+    groups, then <kbd>Apply</kbd>. The filter strip appears with chips. Tap an
+    individual chip's <kbd>&times;</kbd> to remove that filter, or tap
+    <kbd>Clear all</kbd> on the right end of the strip to wipe everything.
+    Tap any product to open the product page - then tap back; filters stay.
+    If a combination has no results, one chip fades grey and an orange card
+    explains why; tap the grey chip for the recovery modal.
+    The bottom nav (Home/Categories/Search/Cart/Account) is intentionally
+    out of scope for this prototype - tapping shows a notice.
+  </div>
+
+<script>
+(() => {
+  // ---- Mock data: 14 kettles ----
+  // Designed so {under40, 4plus, stainless, cordless} together = 0 items,
+  // but dropping "cordless" recovers 3 items.
+  const ITEMS = [
+    { id: 1,  title: "Hamilton Beach 1.7L Stainless",     price: 28.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 2,  title: "Cuisinart 1.5L Brushed Steel",      price: 36.49, rating: 4.6, material: "stainless", cord: "corded",   seller: "Marketplace", sponsored: false },
+    { id: 3,  title: "Mueller 1.8L Stainless",            price: 22.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 4,  title: "OXO Brew 1.0L",                     price: 59.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 5,  title: "Chefman Cordless Stainless 1.0L",   price: 49.99, rating: 4.3, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 6,  title: "BELLA 1.0L Glass Kettle",           price: 18.99, rating: 4.2, material: "glass",     cord: "cordless", seller: "Walmart",     sponsored: true  },
+    { id: 7,  title: "Cosori Glass Cordless 1.7L",        price: 32.99, rating: 4.5, material: "glass",     cord: "cordless", seller: "Marketplace", sponsored: false },
+    { id: 8,  title: "Hamilton Beach Cordless 1.0L",      price: 34.99, rating: 4.4, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 9,  title: "Mueller Cordless Premium 1.5L",     price: 38.49, rating: 4.5, material: "plastic",   cord: "cordless", seller: "Marketplace", sponsored: false },
+    { id: 10, title: "Proctor Silex 1.0L",                price: 12.99, rating: 3.9, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 11, title: "GENERIC Kettle 1.0L",               price:  9.49, rating: 3.4, material: "plastic",   cord: "corded",   seller: "Marketplace", sponsored: true  },
+    { id: 12, title: "Smeg 1.0L Cream",                   price: 199.00,rating: 4.8, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 13, title: "Breville Soft Top 1.7L Stainless",  price: 79.99, rating: 4.7, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 14, title: "Aigostar Glass 1.7L",               price: 24.99, rating: 4.1, material: "glass",     cord: "corded",   seller: "Marketplace", sponsored: false },
+    { id: 15, title: "Ovente Glass 1.7L",                 price: 19.99, rating: 4.3, material: "glass",     cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 16, title: "Russell Hobbs Compact 1.7L",        price: 44.99, rating: 4.4, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 17, title: "Krups Cool Touch 1.7L",             price: 52.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Marketplace", sponsored: false },
+    { id: 18, title: "Secura Stainless 1.8L",             price: 39.99, rating: 4.2, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: true  },
+    { id: 19, title: "T-fal Smart Kettle 1.7L",           price: 29.99, rating: 4.0, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 20, title: "Pukomc Glass Cordless 1.7L",        price: 26.99, rating: 4.4, material: "glass",     cord: "cordless", seller: "Marketplace", sponsored: false },
+    { id: 21, title: "Comfee 1.7L Stainless",             price: 24.99, rating: 4.0, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 22, title: "Zwilling Enfinigy 1.5L",            price: 109.99,rating: 4.7, material: "glass",     cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 23, title: "Aroma Hot H2O 1.0L",                price: 14.99, rating: 3.8, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 24, title: "Brentwood Tea Kettle 1.0L",         price: 11.49, rating: 3.6, material: "plastic",   cord: "corded",   seller: "Marketplace", sponsored: true  },
+    { id: 25, title: "Black+Decker JKC650 1.7L",          price: 42.99, rating: 4.1, material: "plastic",   cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 26, title: "Cuisinart PerfecTemp 1.7L",         price: 99.99, rating: 4.6, material: "stainless", cord: "cordless", seller: "Walmart",     sponsored: false },
+    { id: 27, title: "KitchenAid 1.25L Onyx",             price: 89.99, rating: 4.5, material: "stainless", cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 28, title: "Mecity Mini Travel Kettle",         price: 34.99, rating: 4.2, material: "plastic",   cord: "cordless", seller: "Marketplace", sponsored: false },
+    { id: 29, title: "Hamilton Beach 1.0L Mini",          price: 16.99, rating: 4.0, material: "plastic",   cord: "corded",   seller: "Walmart",     sponsored: false },
+    { id: 30, title: "Cosmo Stainless Cordless 1.7L",     price: 69.99, rating: 4.2, material: "stainless", cord: "cordless", seller: "Marketplace", sponsored: false },
+    { id: 31, title: "Aroma Glass 1.7L",                  price: 22.99, rating: 3.7, material: "glass",     cord: "corded",   seller: "Marketplace", sponsored: true  },
+    { id: 32, title: "Sahara Stainless 1.7L Lux",         price: 149.00,rating: 4.6, material: "stainless", cord: "cordless", seller: "Marketplace", sponsored: false },
+  ];
+
+  const FILTER_LABELS = {
+    price:    { under20: "Under $20", under40: "Under $40", under60: "Under $60", any: null },
+    rating:   { "4plus": "4+ stars", "3plus": "3+ stars", any: null },
+    material: { stainless: "Stainless", glass: "Glass", plastic: "Plastic", any: null },
+    cord:     { cordless: "Cordless", corded: "Corded", any: null },
+  };
+  const ORDER = ["price","rating","material","cord"];
+
+  // Predicates per filter value
+  const PRED = {
+    price: {
+      under20: i => i.price < 20,
+      under40: i => i.price < 40,
+      under60: i => i.price < 60,
+      any: () => true,
+    },
+    rating: {
+      "4plus": i => i.rating >= 4.0,
+      "3plus": i => i.rating >= 3.0,
+      any: () => true,
+    },
+    material: {
+      stainless: i => i.material === "stainless",
+      glass:     i => i.material === "glass",
+      plastic:   i => i.material === "plastic",
+      any: () => true,
+    },
+    cord: {
+      cordless: i => i.cord === "cordless",
+      corded:   i => i.cord === "corded",
+      any: () => true,
+    },
+  };
+
+  // State
+  const state = {
+    active: { price: null, rating: null, material: null, cord: null },   // {filterKey: value}
+    dropped: {},   // {filterKey: value} - chip shown grey but predicate not applied
+    pdp: null,
+    pendingSel: null,  // sheet pending selections
+  };
+
+  // ---- Helpers ----
+  function filterItems() {
+    return ITEMS.filter(it => ORDER.every(k => {
+      const v = state.active[k];
+      if (!v) return true;
+      return PRED[k][v](it);
+    }));
+  }
+  function nActive() { return ORDER.filter(k => state.active[k]).length; }
+  function nDropped() { return Object.keys(state.dropped).length; }
+
+  // If applying all 4 yields 0, drop the "least selective" one - i.e. the
+  // one whose removal recovers the MOST items.
+  function autoResolveConflict() {
+    const all4Selected = ORDER.every(k => state.pendingSel[k] && state.pendingSel[k] !== "any");
+    if (!all4Selected) return null;
+    const trial = { ...state.pendingSel };
+    const fullCount = ITEMS.filter(it => ORDER.every(k => PRED[k][trial[k]](it))).length;
+    if (fullCount > 0) return null;
+    let best = null, bestCount = -1;
+    ORDER.forEach(k => {
+      const alt = { ...trial }; alt[k] = "any";
+      const c = ITEMS.filter(it => ORDER.every(kk => PRED[kk][alt[kk]](it))).length;
+      if (c > bestCount) { bestCount = c; best = k; }
+    });
+    return { dropKey: best, dropVal: trial[best], recovers: bestCount };
+  }
+
+  // ---- Renderers ----
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => document.querySelectorAll(sel);
+
+  function render() {
+    const items = filterItems();
+    $("#count").textContent =
+      `${items.length} result${items.length===1?"":"s"}` +
+      (nActive() ? ` (${nActive()} of ${nActive()+nDropped()} filters)` : "");
+    renderStrip("#strip");
+    renderStrip("#strip-pdp");
+    renderResults(items);
+    renderDropBanner();
+  }
+
+  function renderStrip(sel) {
+    const el = $(sel);
+    if (nActive() + nDropped() === 0) { el.style.display = "none"; return; }
+    el.style.display = "flex";
+    el.innerHTML = '<span class="label">Filters:</span>';
+    ORDER.forEach(k => {
+      const v = state.active[k];
+      if (v) {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.innerHTML = `${FILTER_LABELS[k][v]}<span class="x">&times;</span>`;
+        chip.onclick = (e) => { e.stopPropagation(); state.active[k] = null; render(); };
+        el.appendChild(chip);
+      }
+    });
+    ORDER.forEach(k => {
+      const v = state.dropped[k];
+      if (v) {
+        const chip = document.createElement("span");
+        chip.className = "chip dropped";
+        chip.innerHTML = `${FILTER_LABELS[k][v]} (dropped)`;
+        chip.onclick = (e) => { e.stopPropagation(); openRecovery(k, v); };
+        el.appendChild(chip);
+      }
+    });
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "clear-all";
+    clearBtn.textContent = "Clear all";
+    clearBtn.onclick = (e) => { e.stopPropagation(); clearAll(); };
+    el.appendChild(clearBtn);
+  }
+
+  function clearAll() {
+    ORDER.forEach(k => state.active[k] = null);
+    state.dropped = {};
+    flash("All filters cleared");
+    render();
+  }
+
+  function renderResults(items) {
+    const host = $("#results");
+    host.innerHTML = "";
+    if (items.length === 0) {
+      host.innerHTML = '<div class="empty">No items match all filters. Try removing a chip.</div>';
+      return;
+    }
+    items.forEach(it => {
+      const c = document.createElement("div");
+      c.className = "card";
+      c.innerHTML = `
+        <div class="img">[img]</div>
+        <div class="info">
+          <div class="title">${it.title}</div>
+          <div class="rating">${"&#9733;".repeat(Math.round(it.rating))}&nbsp; ${it.rating.toFixed(1)}</div>
+          <div class="price">$${it.price.toFixed(2)}</div>
+          <span class="seller ${it.seller==="Walmart"?"walmart":"marketplace"}">${it.seller==="Walmart"?"Sold by Walmart":"Marketplace seller"}</span>
+        </div>
+        ${it.sponsored?'<span class="sponsored">Sponsored</span>':""}
+      `;
+      c.onclick = () => openPDP(it);
+      host.appendChild(c);
+    });
+  }
+
+  function renderDropBanner() {
+    const host = $("#drop-banner-host");
+    host.innerHTML = "";
+    const droppedKeys = Object.keys(state.dropped);
+    if (droppedKeys.length === 0) return;
+    const k = droppedKeys[0];
+    const lbl = FILTER_LABELS[k][state.dropped[k]];
+    const recoveredCount = filterItems().length;
+    const card = document.createElement("div");
+    card.className = "drop-card";
+    card.innerHTML = `
+      <div class="head">"${lbl}" was auto-relaxed</div>
+      <div class="body-text">
+        Your four filters together matched <b>0 items</b>.
+        Dropping <b>${lbl}</b> brought back <b>${recoveredCount} result${recoveredCount === 1 ? '' : 's'}</b>
+        (that's the swap that recovered the most).
+        Tap the grey chip above to swap which filter gets relaxed,
+        or Clear all to start over.
+      </div>
+    `;
+    host.appendChild(card);
+  }
+
+  // ---- Filter sheet ----
+  function openSheet() {
+    state.pendingSel = { ...state.active };
+    ORDER.forEach(k => { if (!state.pendingSel[k]) state.pendingSel[k] = "any"; });
+    // Pre-load with the "happy demo" picks the first time
+    if (Object.values(state.pendingSel).every(v => v === "any")) {
+      state.pendingSel = { price: "under40", rating: "4plus", material: "stainless", cord: "cordless" };
+    }
+    repaintSheet();
+    $("#scrim").classList.add("open");
+    $("#sheet").classList.add("open");
+  }
+  function closeSheet() {
+    $("#scrim").classList.remove("open");
+    $("#sheet").classList.remove("open");
+  }
+  function repaintSheet() {
+    $$("#sheet .opts").forEach(group => {
+      const k = group.dataset.group;
+      group.querySelectorAll(".opt").forEach(o => {
+        o.classList.toggle("on", state.pendingSel[k] === o.dataset.val);
+      });
+    });
+  }
+  function applySheet() {
+    const resolved = autoResolveConflict();
+    const next = { ...state.pendingSel };
+    state.dropped = {};
+    if (resolved) {
+      state.dropped[resolved.dropKey] = resolved.dropVal;
+      next[resolved.dropKey] = null;
+      flash("1 filter dropped to keep results > 0");
+    } else {
+      flash("Filters applied");
+    }
+    ORDER.forEach(k => {
+      state.active[k] = (next[k] && next[k] !== "any") ? next[k] : null;
+    });
+    closeSheet();
+    render();
+  }
+  function clearSheet() {
+    ORDER.forEach(k => state.pendingSel[k] = "any");
+    repaintSheet();
+  }
+
+  // ---- Recovery modal ----
+  function openRecovery(droppedKey, droppedVal) {
+    const lbl = FILTER_LABELS[droppedKey][droppedVal];
+    $("#modal-title").textContent = `Re-apply "${lbl}"?`;
+    $("#modal-sub").textContent =
+      `${lbl} can't combine with all current filters. Pick a filter to drop instead:`;
+    const opts = $("#modal-opts");
+    opts.innerHTML = "";
+    ORDER.forEach(k => {
+      if (k === droppedKey) return;
+      if (!state.active[k]) return;
+      const altActive = { ...state.active };
+      altActive[k] = null;
+      altActive[droppedKey] = droppedVal;
+      const count = ITEMS.filter(it => ORDER.every(kk =>
+        !altActive[kk] || PRED[kk][altActive[kk]](it))).length;
+      const opt = document.createElement("div");
+      opt.className = "option";
+      opt.innerHTML = `
+        <div class="o-label">Drop ${FILTER_LABELS[k][state.active[k]]}</div>
+        <div class="o-sub">Recovers ${count} item${count===1?"":"s"} that include ${lbl}</div>
+      `;
+      opt.onclick = () => {
+        state.active[k] = null;
+        state.active[droppedKey] = droppedVal;
+        state.dropped = {};
+        closeModal();
+        flash(`Now showing items with ${lbl}`);
+        render();
+      };
+      opts.appendChild(opt);
+    });
+    $("#scrim").classList.add("open");
+    $("#modal").classList.add("open");
+  }
+  function closeModal() {
+    $("#scrim").classList.remove("open");
+    $("#modal").classList.remove("open");
+  }
+
+  // ---- PDP ----
+  function openPDP(it) {
+    state.pdp = it;
+    $("#pdp-title").textContent = it.title;
+    $("#pdp-price").textContent = "$" + it.price.toFixed(2);
+    $("#pdp-rating").textContent =
+      "\u2605".repeat(Math.round(it.rating)) + "  " + it.rating.toFixed(1) +
+      "  (" + Math.floor(Math.random()*4000 + 200) + " reviews)";
+    $("#screen-results").style.display = "none";
+    $("#screen-pdp").style.display = "block";
+  }
+  function closePDP() {
+    $("#screen-pdp").style.display = "none";
+    $("#screen-results").style.display = "block";
+    if (nActive() + nDropped() > 0) flash("Filters held");
+  }
+
+  // ---- Flash ----
+  let flashTimer = null;
+  function flash(msg) {
+    const el = $("#flash");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => el.classList.remove("show"), 1600);
+  }
+
+  // ---- Wire-up ----
+  $("#btn-filter").onclick = openSheet;
+  $("#btn-sort").onclick = () => flash("Sort not in scope for prototype");
+  $("#sheet-cancel").onclick = closeSheet;
+  $("#sheet-clear").onclick = clearSheet;
+  $("#sheet-apply").onclick = applySheet;
+  $("#scrim").onclick = () => { closeSheet(); closeModal(); };
+  $("#modal-cancel").onclick = closeModal;
+  $("#pdp-back").onclick = closePDP;
+  $$("#sheet .opt").forEach(o => {
+    o.onclick = () => {
+      const k = o.parentElement.dataset.group;
+      state.pendingSel[k] = o.dataset.val;
+      repaintSheet();
+    };
+  });
+
+  // Bottom nav - visual only for this prototype, but they should respond
+  $$(".nav .item").forEach(item => {
+    item.onclick = () => {
+      $$(".nav .item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      const label = item.textContent.trim();
+      flash(`${label} - not in scope for this prototype`);
+    };
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
