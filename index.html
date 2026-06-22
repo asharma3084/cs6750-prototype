@@ -164,7 +164,7 @@
     gap: 2px; font-size: 10px; color: var(--muted); cursor: pointer;
   }
   .nav .item.active { color: var(--accent); }
-  .nav .icon { width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 4px; }
+  .nav .item svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
   /* Modal */
   .scrim {
@@ -360,11 +360,26 @@
     </div>
 
     <div class="nav">
-      <div class="item active"><div class="icon"></div>Home</div>
-      <div class="item"><div class="icon"></div>Categories</div>
-      <div class="item"><div class="icon"></div>Search</div>
-      <div class="item"><div class="icon"></div>Cart</div>
-      <div class="item"><div class="icon"></div>Account</div>
+      <div class="item active">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 L12 3 L21 11 L21 21 L14 21 L14 14 L10 14 L10 21 L3 21 Z"/></svg>
+        Home
+      </div>
+      <div class="item">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>
+        Categories
+      </div>
+      <div class="item">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+        Search
+      </div>
+      <div class="item">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8 L19 8 L18 21 L6 21 Z"/><path d="M9 8 V6 a3 3 0 0 1 6 0 V8"/></svg>
+        Cart
+      </div>
+      <div class="item">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M4 21 c0 -4.5 4 -7 8 -7 s8 2.5 8 7"/></svg>
+        Account
+      </div>
     </div>
 
     <!-- Filter sheet -->
