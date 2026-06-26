@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alt C — Sticky Filter Strip &amp; Honest Drops | CS 6750 IP CIN4</title>
+<style>
+  :root {
+    --wm-blue: #0071dc;
+    --wm-blue-dark: #004f9a;
+    --wm-yellow: #ffc220;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d8d8dc;
+    --soft: #f3f3f5;
+    --accent: #1e54c9;
+    --accent-bg: #e6efff;
+    --drop: #a8431a;
+    --drop-bg: #fff3e8;
+    --green: #1f7a3c;
+    --green-bg: #e8f5ee;
+    --orange: #d88324;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+  body { background: #f6f7fc; padding: 24px 16px 60px; }
+  .page-head { max-width: 1280px; margin: 0 auto 24px; text-align: center; }
+  .page-head .eyebrow {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: var(--accent-bg); color: var(--accent);
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .page-head h1 { margin: 12px 0 6px; font-size: 24px; font-weight: 800; }
+  .page-head p { margin: 0 auto; color: var(--muted); font-size: 14px; max-width: 600px; }
+  .nav-back { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .nav-back:hover { text-decoration: underline; }
+  .interactive-link {
+    display: inline-block; margin-top: 8px; padding: 8px 16px;
+    background: var(--accent); color: #fff; border-radius: 20px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+  }
+
+  .screens-row {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 32px; justify-content: center;
+  }
+  .screen-card { width: 360px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .screen-label { text-align: center; }
+  .screen-label .num {
+    display: inline-block; width: 28px; height: 28px; line-height: 28px;
+    border-radius: 50%; background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 13px; margin-right: 8px;
+  }
+  .screen-label .caption { font-size: 14px; font-weight: 600; color: #2a2a2a; }
+  .screen-label .sub { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); max-width: 320px; margin-left: auto; margin-right: auto; }
+
+  .phone {
+    width: 360px; height: 720px;
+    background: #14141a; border-radius: 36px; padding: 12px;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.05);
+  }
+  .phone-screen {
+    width: 100%; height: 100%; background: #fff;
+    border-radius: 26px; overflow: hidden;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .header {
+    background: var(--wm-blue); padding: 10px 14px;
+    display: flex; gap: 10px; align-items: center; flex: 0 0 auto;
+  }
+  .logo {
+    width: 30px; height: 30px; background: var(--wm-yellow);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-weight: 800; font-size: 14px; color: #14141a;
+  }
+  .brand-text { color: #fff; font-weight: 800; font-size: 13px; letter-spacing: -0.2px; white-space: nowrap; }
+  .search-bar {
+    flex: 1; background: #fff; border-radius: 20px;
+    padding: 6px 12px; font-size: 12px; color: #444;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .search-bar .ico { color: #888; font-size: 14px; }
+  .body { flex: 1; overflow-y: auto; background: #fff; position: relative; }
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px 8px; border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+  .toolbar .count { font-size: 13px; font-weight: 600; }
+  .toolbar .actions { display: flex; gap: 14px; font-size: 12px; color: var(--accent); font-weight: 600; }
+
+  .strip {
+    background: #fafbff; border-bottom: 1px solid var(--line);
+    padding: 8px 10px; display: flex; gap: 6px;
+    overflow-x: auto; align-items: center;
+  }
+  .strip .label { font-size: 11px; color: var(--muted); font-weight: 600; padding: 4px 2px; white-space: nowrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 10px; border-radius: 14px;
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+    background: var(--accent-bg); color: var(--accent);
+    border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+  }
+  .chip.dropped {
+    background: var(--soft); color: var(--drop);
+    border: 1.5px dashed #c4423e;
+  }
+  .chip .x { margin-left: 3px; font-size: 13px; font-weight: 700; line-height: 1; }
+
+  .toast {
+    position: absolute; left: 12px; right: 12px; top: 60px;
+    background: #14141a; color: #fff;
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    z-index: 8;
+  }
+  .toast .check { color: #34d058; font-size: 14px; }
+
+  .results { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+  .card {
+    display: flex; gap: 10px; padding: 10px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: #fff; box-shadow: var(--shadow);
+  }
+  .card .img {
+    width: 70px; height: 70px; flex-shrink: 0;
+    background: linear-gradient(135deg, #f7f7fb 0%, #ebebf1 100%);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .card .info { flex: 1; min-width: 0; }
+  .card .title { font-size: 12px; font-weight: 600; line-height: 1.3; margin-bottom: 3px; color: #1a1a1a; }
+  .card .rating { font-size: 11px; color: var(--orange); margin-bottom: 3px; }
+  .card .price { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .card .seller {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 4px;
+    color: var(--green); background: var(--green-bg);
+  }
+
+  .drop-card {
+    margin: 10px; padding: 12px 14px;
+    background: var(--drop-bg); border: 1px solid #e7b88a;
+    border-radius: 10px;
+  }
+  .drop-card .head {
+    font-size: 13px; font-weight: 700; color: var(--drop);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+  }
+  .drop-card .body-text { font-size: 12px; color: #5a3a22; line-height: 1.45; margin-bottom: 10px; }
+  .drop-card .body-text b { color: var(--drop); }
+  .drop-card .options { display: flex; flex-direction: column; gap: 6px; }
+  .drop-card .opt {
+    padding: 8px 10px; border: 1.5px solid var(--accent);
+    background: #fff; border-radius: 8px;
+    font-size: 11px; font-weight: 700; color: var(--accent);
+  }
+  .drop-card .opt.secondary {
+    border-color: #c4c4cc; color: #555;
+  }
+
+  .nav {
+    height: 56px; flex: 0 0 auto;
+    background: #fff; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; align-items: center;
+  }
+  .nav .item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; color: var(--muted);
+  }
+  .nav .item.active { color: var(--accent); }
+  .nav .item .dot {
+    width: 18px; height: 18px; border-radius: 4px;
+    background: currentColor; opacity: 0.85;
+  }
+
+  @media (max-width: 800px) { .screens-row { gap: 40px; } }
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <span class="eyebrow">Prototype Alt C</span>
+    <h1>Sticky Filter Strip &amp; Honest Drops</h1>
+    <p>Filters stay visible above the results. If a filter empties the list, the app says so plainly and offers two clear recovery paths. Filters persist when you come back from a product page.</p>
+    <a href="../" class="nav-back">&larr; Back to all prototypes</a>
+    <br>
+    <a href="interactive.html" class="interactive-link">Open interactive version &rarr;</a>
+  </div>
+
+  <div class="screens-row">
+
+    <!-- SCREEN 1: Sticky chips applied, results visible -->
+    <div class="screen-card" id="screen-1">
+      <div class="screen-label">
+        <span class="num">1</span>
+        <span class="caption">Filters applied, results visible</span>
+        <span class="sub">Two chips sit above results: &ldquo;Under $40&rdquo; and &ldquo;Cuisinart&rdquo;. Always visible while scrolling.</span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="header">
+            <div class="logo">O</div>
+            <div class="brand-text">Omni-Mart</div>
+            <div class="search-bar"><span class="ico">&#128269;</span><span>1.5L electric kettle</span></div>
+          </div>
+          <div class="body">
+            <div class="toolbar">
+              <span class="count">3 results</span>
+              <div class="actions"><span>Filter</span><span>Sort</span></div>
+            </div>
+            <div class="strip">
+              <span class="label">Active:</span>
+              <span class="chip">Under $40 <span class="x">&times;</span></span>
+              <span class="chip">Cuisinart <span class="x">&times;</span></span>
+            </div>
+            <div class="results">
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart 1.5L Electric Cordless Kettle</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.4 (1,204)</div>
+                  <div class="price">$39.88</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart PerfecTemp 1.5L Stainless</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.3 (582)</div>
+                  <div class="price">$34.50</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart Compact 1.5L Kettle, White</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.1 (308)</div>
+                  <div class="price">$29.99</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="nav">
+            <div class="item active"><div class="dot"></div>Home</div>
+            <div class="item"><div class="dot"></div>Search</div>
+            <div class="item"><div class="dot"></div>Cart</div>
+            <div class="item"><div class="dot"></div>Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: Filter drop honest message -->
+    <div class="screen-card" id="screen-2">
+      <div class="screen-label">
+        <span class="num">2</span>
+        <span class="caption">A filter empties the list &middot; honest drop card</span>
+        <span class="sub">User added &ldquo;Stainless steel&rdquo;. Zero results. App says why and offers two recovery paths.</span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="header">
+            <div class="logo">O</div>
+            <div class="brand-text">Omni-Mart</div>
+            <div class="search-bar"><span class="ico">&#128269;</span><span>1.5L electric kettle</span></div>
+          </div>
+          <div class="body">
+            <div class="toolbar">
+              <span class="count">0 results</span>
+              <div class="actions"><span>Filter</span><span>Sort</span></div>
+            </div>
+            <div class="strip">
+              <span class="label">Active:</span>
+              <span class="chip">Under $40 <span class="x">&times;</span></span>
+              <span class="chip">Cuisinart <span class="x">&times;</span></span>
+              <span class="chip dropped">Stainless steel <span class="x">&times;</span></span>
+            </div>
+            <div class="drop-card">
+              <div class="head">&#9888; No items match all three filters</div>
+              <div class="body-text">
+                Adding <b>Stainless steel</b> to Under $40 + Cuisinart leaves zero in stock right now. What would you like to do?
+              </div>
+              <div class="options">
+                <div class="opt">Drop &ldquo;Stainless steel&rdquo; (3 results)</div>
+                <div class="opt">Drop &ldquo;Under $40&rdquo; instead (5 results)</div>
+                <div class="opt secondary">Keep all three, show out-of-stock</div>
+              </div>
+            </div>
+          </div>
+          <div class="nav">
+            <div class="item active"><div class="dot"></div>Home</div>
+            <div class="item"><div class="dot"></div>Search</div>
+            <div class="item"><div class="dot"></div>Cart</div>
+            <div class="item"><div class="dot"></div>Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: Filters preserved after returning from PDP -->
+    <div class="screen-card" id="screen-3">
+      <div class="screen-label">
+        <span class="num">3</span>
+        <span class="caption">Back from product page &middot; filters preserved</span>
+        <span class="sub">User opened a kettle, hit back. Same filters, same results, small toast confirms.</span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="header">
+            <div class="logo">O</div>
+            <div class="brand-text">Omni-Mart</div>
+            <div class="search-bar"><span class="ico">&#128269;</span><span>1.5L electric kettle</span></div>
+          </div>
+          <div class="body">
+            <div class="toolbar">
+              <span class="count">3 results</span>
+              <div class="actions"><span>Filter</span><span>Sort</span></div>
+            </div>
+            <div class="strip">
+              <span class="label">Active:</span>
+              <span class="chip">Under $40 <span class="x">&times;</span></span>
+              <span class="chip">Cuisinart <span class="x">&times;</span></span>
+            </div>
+            <div class="toast">
+              <span class="check">&#10003;</span>
+              <span>Filters preserved from your last visit</span>
+            </div>
+            <div class="results">
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart 1.5L Electric Cordless Kettle</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.4 (1,204)</div>
+                  <div class="price">$39.88</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart PerfecTemp 1.5L Stainless</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.3 (582)</div>
+                  <div class="price">$34.50</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="img">&#9749;</div>
+                <div class="info">
+                  <div class="title">Cuisinart Compact 1.5L Kettle, White</div>
+                  <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; 4.1 (308)</div>
+                  <div class="price">$29.99</div>
+                  <span class="seller">Omni-Mart shipped</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="nav">
+            <div class="item active"><div class="dot"></div>Home</div>
+            <div class="item"><div class="dot"></div>Search</div>
+            <div class="item"><div class="dot"></div>Cart</div>
+            <div class="item"><div class="dot"></div>Account</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
