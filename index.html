@@ -108,6 +108,11 @@
     font-weight: 800;
     letter-spacing: -0.02em;
     max-width: 900px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 0.28em;
+    row-gap: 0.05em;
   }
   .title .w { display: inline-block; opacity: 0; transform: translateY(14px); animation: rise 0.7s ease-out forwards; }
   .title .gradient {
@@ -474,15 +479,7 @@
     <section class="hero">
       <span class="eyebrow"><span class="dot"></span>CS 6750 &middot; Individual Project &middot; Check-In 4</span>
 
-      <h1 class="title" aria-label="Three takes on a broken shopping moment.">
-        <span class="w" style="animation-delay:.18s">Three</span>
-        <span class="w gradient" style="animation-delay:.26s">takes</span>
-        <span class="w" style="animation-delay:.34s">on</span>
-        <span class="w" style="animation-delay:.42s">a</span>
-        <span class="w" style="animation-delay:.50s">broken</span>
-        <span class="w" style="animation-delay:.58s">shopping</span>
-        <span class="w" style="animation-delay:.66s">moment.</span>
-      </h1>
+      <h1 class="title" aria-label="Three takes on a broken shopping moment."><span class="w" style="animation-delay:.18s">Three</span><span class="w gradient" style="animation-delay:.26s">takes</span><span class="w" style="animation-delay:.34s">on</span><span class="w" style="animation-delay:.42s">a</span><span class="w" style="animation-delay:.50s">broken</span><span class="w" style="animation-delay:.58s">shopping</span><span class="w" style="animation-delay:.66s">moment.</span></h1>
 
       <p class="lede">
         I picked one annoying part of shopping online &mdash; hunting for a <span class="accent-text">cheap kettle that&rsquo;s actually good</span> &mdash; and built three small mobile fixes for it. Tap one, walk three screens, then tell me which version you&rsquo;d actually want on your phone.
