@@ -171,6 +171,25 @@
   }
 
   @media (max-width: 800px) { .screens-row { gap: 40px; } }
+
+  /* ===== mobile (phone) breakpoint ===== */
+  @media (max-width: 480px) {
+    body { padding: 16px 8px 40px; }
+    .page-head h1 { font-size: 22px; }
+    .page-head p { font-size: 13px; }
+    .nav-back { margin-top: 10px; }
+    .screens-row { gap: 24px; }
+    .screen-card {
+      --w: min(360px, calc(100vw - 16px));
+      width: var(--w);
+    }
+    .phone {
+      transform: scale(calc(var(--w) / 360));
+      transform-origin: top left;
+      margin-right: calc(var(--w) - 360px);
+      margin-bottom: calc(var(--w) * 2 - 720px);
+    }
+  }
 </style>
 </head>
 <body>
