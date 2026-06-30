@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS 6750 IP CIN4 — Three Design Alternatives</title>
+<style>
+  :root {
+    --wm-blue: #0071dc;
+    --wm-yellow: #ffc220;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #d8d8dc;
+    --accent: #1e54c9;
+    --accent-bg: #e6efff;
+    --green: #1f7a3c;
+    --green-bg: #e8f5ee;
+    --orange: #d88324;
+    --orange-bg: #fff4e0;
+    --drop: #a8431a;
+    --drop-bg: #fff3e8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(900px 500px at 12% 10%, #dde6f7 0%, transparent 60%),
+      radial-gradient(800px 500px at 88% 90%, #f0e1f6 0%, transparent 55%),
+      linear-gradient(180deg, #f6f7fc 0%, #eaecf2 100%);
+    padding: 40px 20px 80px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .hero { text-align: center; margin-bottom: 48px; }
+  .hero .eyebrow {
+    display: inline-block; padding: 5px 14px; border-radius: 999px;
+    background: rgba(30,84,201,0.10); border: 1px solid rgba(30,84,201,0.18);
+    color: var(--accent); font-size: 11px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+  }
+  .hero h1 { margin: 16px 0 10px; font-size: 36px; font-weight: 800; line-height: 1.2; }
+  .hero p { margin: 0 auto; max-width: 640px; color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .hero .meta { margin-top: 12px; font-size: 12px; color: #888; }
+
+  .cards {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 880px) { .cards { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } }
+
+  .card {
+    background: #fff; border-radius: 18px;
+    padding: 24px 22px 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+    display: flex; flex-direction: column; gap: 14px;
+    text-decoration: none; color: inherit;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+    border-color: var(--accent);
+  }
+  .card .badge {
+    display: inline-block; padding: 4px 10px;
+    border-radius: 6px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; align-self: flex-start;
+  }
+  .card.a .badge { background: var(--accent-bg); color: var(--accent); }
+  .card.b .badge { background: var(--orange-bg); color: var(--orange); }
+  .card.c .badge { background: var(--drop-bg); color: var(--drop); }
+
+  .card h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.25; }
+  .card .summary { margin: 0; font-size: 14px; color: #444; line-height: 1.5; }
+
+  .card .feature-list {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .card .feature-list li {
+    font-size: 12px; color: var(--muted);
+    padding-left: 18px; position: relative;
+  }
+  .card .feature-list li::before {
+    content: '\2713'; position: absolute; left: 0; top: 0;
+    color: var(--green); font-weight: 700;
+  }
+
+  .card .cta {
+    margin-top: auto; padding: 10px 16px;
+    background: var(--accent); color: #fff;
+    border-radius: 22px; font-size: 13px; font-weight: 700;
+    text-align: center;
+    transition: background 0.18s;
+  }
+  .card:hover .cta { background: #143fa6; }
+
+  .footer {
+    margin-top: 56px; text-align: center;
+    font-size: 12px; color: var(--muted);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <span class="eyebrow">CS 6750 &middot; Individual Project &middot; CIN4</span>
+      <h1>Three design alternatives for the kettle-shopping task</h1>
+      <p>Each prototype is shown as three mobile screens. Same starting context: shopping for a 1.5L electric kettle under $40 on an Omni-Mart app. Pick a prototype to view.</p>
+      <div class="meta">Static mid-fidelity mockups for survey evaluation. Side-by-side scoring uses identical phone framing across all three to avoid fidelity bias.</div>
+    </div>
+
+    <div class="cards">
+
+      <a class="card a" href="alt-a/">
+        <span class="badge">Alt A</span>
+        <h2>Comparison Tray</h2>
+        <p class="summary">Pin items as you browse, then open a side-by-side compare view with auto-highlighted differences.</p>
+        <ul class="feature-list">
+          <li>&ldquo;Add to compare&rdquo; on every card</li>
+          <li>Sticky tray with thumbnails</li>
+          <li>Side-by-side spec table</li>
+        </ul>
+        <div class="cta">View Alt A &rarr;</div>
+      </a>
+
+      <a class="card b" href="alt-b/">
+        <span class="badge">Alt B</span>
+        <h2>Seller &amp; Sponsor Labels</h2>
+        <p class="summary">Every result card carries a chip showing fulfillment and paid placement. Tap to learn who&rsquo;s selling and where it ships from.</p>
+        <ul class="feature-list">
+          <li>Green / Blue / Orange chips on every card</li>
+          <li>Tap-to-expand seller tooltip</li>
+          <li>One-tap &ldquo;Hide sponsored&rdquo; filter</li>
+        </ul>
+        <div class="cta">View Alt B &rarr;</div>
+      </a>
+
+      <a class="card c" href="alt-c/">
+        <span class="badge">Alt C</span>
+        <h2>Sticky Filter Strip &amp; Honest Drops</h2>
+        <p class="summary">Filters stay visible above results. If a filter empties the list, the app says so plainly and offers two clear recovery paths.</p>
+        <ul class="feature-list">
+          <li>Persistent active-filter chips</li>
+          <li>Plain-language &ldquo;why zero results&rdquo; card</li>
+          <li>Filters preserved across PDP returns</li>
+        </ul>
+        <div class="cta">View Alt C &rarr;</div>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      Source on GitHub: <a href="https://github.com/asharma3084/cs6750-prototype">asharma3084/cs6750-prototype</a>
+      &nbsp;&middot;&nbsp;
+      <a href="alt-c/interactive.html">Alt C interactive walkthrough</a>
+    </div>
+  </div>
+</body>
+</html>
